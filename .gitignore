@@ -1,0 +1,14 @@
+# Root
+.DS_Store
+*.log
+
+# Backend
+backend/node_modules/
+backend/.env
+backend_dev*.log
+
+# Frontend
+frontend/node_modules/
+frontend/.npm-cache/
+frontend/dist/
+frontend_dev*.log
