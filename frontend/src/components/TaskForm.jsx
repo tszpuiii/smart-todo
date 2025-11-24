@@ -51,7 +51,7 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
         </select>
       </label>
       <label>{t('form_due')}
-        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} min="1000-01-01" max="9999-12-31" />
       </label>
       <label>{t('form_notes')}
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('form_notes_ph')} />

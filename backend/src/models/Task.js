@@ -20,7 +20,19 @@ const taskSchema = new mongoose.Schema(
     },
     notes: { type: String, default: '' },
     completed: { type: Boolean, default: false },
-    dueDate: { type: Date },
+    dueDate: { 
+      type: Date,
+      validate: {
+        validator: function (v) {
+          if (!v) return true;
+          const d = v instanceof Date ? v : new Date(v);
+          if (Number.isNaN(d.getTime())) return false;
+          const y = d.getUTCFullYear();
+          return y >= 1000 && y <= 9999;
+        },
+        message: 'dueDate year must be 4 digits (1000–9999)'
+      }
+    },
     order: { type: Number, default: () => Date.now(), index: true }
   },
   { timestamps: true }
