@@ -86,6 +86,7 @@ updatedAt: Date
   - Today: tasks due today (incomplete in sidebar counts)
   - Upcoming: due today or future, or without due date (incomplete in sidebar counts)
   - Expired: due date < today and not completed
+- Date validation: `dueDate` year is validated on server (Mongoose) to be 4 digits (1000–9999); client inputs also restrict `min="1000-01-01"` and `max="9999-12-31"`.
 - Category counts: sidebar shows all categories (including when all tasks completed), counts only incomplete tasks.
 - Board DnD: changes task `status`; persisted via `update`.
 - Reorder: list view supports ordering via POST `/api/tasks/reorder`.
@@ -152,6 +153,11 @@ See `README.md` for step‑by‑step setup, environment variables, and scripts.
 - Task reminders/notifications.
 - File attachments for tasks.
 
+## 15. Recent Enhancements
+- Dark theme improvements (unified surface color, readable badges/inputs, Kanban tints).
+- Login loading overlay redesigned with animated spinner and status hint.
+- Strict 4‑digit year validation for task `dueDate` (server + client).
+- Added `vercel.json` for SPA rewrites when deploying to Vercel.*** End Patch
 ## 14. Appendix – API Summary
 Auth
 - `POST /api/auth/register`, `POST /api/auth/login`

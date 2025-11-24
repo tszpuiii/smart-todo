@@ -120,3 +120,10 @@ Backend typically runs as a service (no build step required).
 - JWT default lifetime: 7 days.
 - All task/list CRUD are authenticated and isolated per user.
 - Accessibility: focus styles, reduced motion preference respected.
+
+## Recent Updates
+- Dark mode refinements: unified surface color, improved sidebar badges/active row, Kanban column tints for better contrast.
+- Inputs readability in dark mode: higher-contrast text/placeholders for inputs/selects.
+- Login UX: polished loading overlay with animated spinner and “Signing in…” hint.
+- Date validation: task `dueDate` year strictly limited to 4 digits (1000–9999) at both client (HTML min/max) and server (Mongoose validator).
+- SPA deploy: `frontend/vercel.json` added for client-side routing rewrites.*** End Patch*** } ?>>
