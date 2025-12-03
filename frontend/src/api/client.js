@@ -71,6 +71,25 @@ export const api = {
   async deleteList(token, id, cascade = false) {
     const qs = cascade ? '?cascade=1' : '';
     return request('DELETE', `/lists/${id}${qs}`, undefined, token);
+  },
+
+  // Weather
+  async weatherByCity(token, { city, units, lang }) {
+    const params = new URLSearchParams();
+    if (city) params.set('city', city);
+    if (units) params.set('units', units);
+    if (lang) params.set('lang', lang);
+    const query = `?${params.toString()}`;
+    return request('GET', `/weather${query}`, undefined, token);
+  },
+  async weatherByLatLon(token, { lat, lon, units, lang }) {
+    const params = new URLSearchParams();
+    if (lat != null) params.set('lat', lat);
+    if (lon != null) params.set('lon', lon);
+    if (units) params.set('units', units);
+    if (lang) params.set('lang', lang);
+    const query = `?${params.toString()}`;
+    return request('GET', `/weather${query}`, undefined, token);
   }
 };
 
