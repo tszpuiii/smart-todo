@@ -37,7 +37,7 @@ app.use('/api/weather', weatherRoutes);
 // Global error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  const status = err.status || 500;
+  const status = err.name === 'ValidationError' ? 400 : (err.status || 500);
   const message = err.message || 'Server error';
   res.status(status).json({ error: message });
 });

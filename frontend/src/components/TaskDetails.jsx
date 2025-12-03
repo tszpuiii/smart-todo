@@ -52,7 +52,13 @@ export default function TaskDetails({ task, onSave, onDelete }) {
       <div className="grid-2">
         <div className="field">
           <label>Due date</label>
-          <input type="date" value={local.dueDate ? String(new Date(local.dueDate)).slice(0,10) : ''} onChange={(e)=>change('dueDate', e.target.value)} />
+          <input
+            type="date"
+            value={local.dueDate ? new Date(local.dueDate).toISOString().slice(0,10) : ''}
+            onChange={(e)=>change('dueDate', e.target.value)}
+            min="1000-01-01"
+            max="9999-12-31"
+          />
         </div>
         <div className="field">
           <label>Tags</label>

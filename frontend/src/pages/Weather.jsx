@@ -18,13 +18,7 @@ export default function Weather() {
     setLoading(true); setError('');
     try {
       const langParam = locale === 'zh-Hant' ? 'zh_tw' : 'en';
-      const res = await fetch(`/api/weather?city=${encodeURIComponent(c)}&units=${units}&lang=${langParam}`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) {
-        // 若城市查詢失敗，退回香港座標
-        const txt = await res.text();
-        throw new Error(txt || t('city_lookup_failed'));
-      }
-      const json = await res.json();
+      const json = await api.weatherByCity(token, { city: c, units, lang: langParam });
       if (!json?.data) throw new Error(t('empty_response'));
       setData(json.data);
       setLastQuery({ city: c });
@@ -36,9 +30,7 @@ export default function Weather() {
     setLoading(true); setError('');
     try {
       const langParam = locale === 'zh-Hant' ? 'zh_tw' : 'en';
-      const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}&units=${units}&lang=${langParam}`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error(await res.text());
-      const json = await res.json();
+      const json = await api.weatherByLatLon(token, { lat, lon, units, lang: langParam });
       setData(json.data);
       setLastQuery({ lat, lon });
     } catch (e) { setError(typeof e === 'string' ? e : e.message); }
