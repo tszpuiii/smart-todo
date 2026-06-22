@@ -11,10 +11,12 @@ import Calendar from '../components/Calendar.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { sortTasks, findSuggestFirstId, isSuggestFirstTask } from '../utils/sortTasks.js';
+import { buildListColorMap, getListColorKey } from '../utils/listColors.js';
 
 export default function Tasks() {
   const { token, user } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -44,8 +46,12 @@ export default function Tasks() {
       const filters = {};
       if (categoryFilter) filters.category = categoryFilter;
       if (completedFilter !== 'all') filters.completed = completedFilter === 'true';
-      const res = await api.listTasks(token, filters);
-      setTasks(res.tasks || []);
+      const [tasksRes, listsRes] = await Promise.all([
+        api.listTasks(token, filters),
+        api.listLists(token).catch(() => ({ lists: [] }))
+      ]);
+      setTasks(tasksRes.tasks || []);
+      setLists(listsRes.lists || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -269,6 +275,9 @@ export default function Tasks() {
 
   const detailsVisible = detailsOpen && filteredTasks.length > 0;
 
+  const listColorMap = useMemo(() => buildListColorMap(lists), [lists]);
+  const colorForCategory = (category) => getListColorKey(category, listColorMap);
+
   const globalSuggestFirstId = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -366,7 +375,7 @@ export default function Tasks() {
                   return (
                     <div className="rows expired">
                       {filteredTasks.map((row, index) => (
-                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, filteredTasks, index)} />
+                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, filteredTasks, index)} listColorKey={colorForCategory(row.category)} />
                       ))}
                       {filteredTasks.length === 0 && <div className="muted">{t('no_tasks')}</div>}
                     </div>
@@ -376,7 +385,7 @@ export default function Tasks() {
                   <>
                     <div className="rows">
                       {activeList.map((row, index) => (
-                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} suggestFirst={!showExpiredSection && isSuggestFirstTask(row, activeList, index)} />
+                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} suggestFirst={!showExpiredSection && isSuggestFirstTask(row, activeList, index)} listColorKey={colorForCategory(row.category)} />
                       ))}
                       {activeList.length === 0 && !showExpiredSection && <div className="muted">{t('no_tasks')}</div>}
                     </div>
@@ -385,7 +394,7 @@ export default function Tasks() {
                         <div className="board-heading expired">{t('header_expired')}</div>
                         <div className="rows expired">
                           {expiredList.map((row, index) => (
-                            <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, expiredList, index)} />
+                            <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, expiredList, index)} listColorKey={colorForCategory(row.category)} />
                           ))}
                         </div>
                       </>
@@ -456,7 +465,7 @@ export default function Tasks() {
               )}
               <div className="rows">
                 {filteredTasks.map((t, index) => (
-                  <TaskRow key={t._id} task={t} selected={t._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(t, filteredTasks, index)} />
+                  <TaskRow key={t._id} task={t} selected={t._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(t, filteredTasks, index)} listColorKey={colorForCategory(t.category)} />
                 ))}
                 {filteredTasks.length === 0 && <div className="muted">{t('no_tasks_for_day')}</div>}
               </div>
@@ -487,6 +496,7 @@ export default function Tasks() {
                   {groupedByStatus[col].map((task) => (
                     <TaskItem key={task._id} task={task} isNew={newlyCreatedId===task._id}
                       suggestFirst={!task.completed && String(task._id) === globalSuggestFirstId}
+                      listColorKey={colorForCategory(task.category)}
                       onToggle={handleToggle}
                       onUpdate={handleUpdate}
                       onDelete={handleDelete}
@@ -507,6 +517,7 @@ export default function Tasks() {
                   <ul className="list">
                     {expiredTasks.map((t) => (
                       <TaskItem key={t._id} task={t}
+                        listColorKey={colorForCategory(t.category)}
                         onToggle={handleToggle}
                         onUpdate={handleUpdate}
                         onDelete={handleDelete}

@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../api/client.js';
 import { useLocale } from '../context/LocaleContext.jsx';
+import { LIST_PALETTE, getListColorKey } from '../utils/listColors.js';
+import ListDot from './ListDot.jsx';
 
 export default function Sidebar({ open = true, onToggle, onOpenSettings }) {
   const loc = useLocation();
@@ -183,15 +185,19 @@ export default function Sidebar({ open = true, onToggle, onOpenSettings }) {
           <div className="muted" style={{fontSize:12, margin:'6px 0'}}>{t('no_lists_yet')}</div>
         ) : categoryCounts.map(([cat, count], idx) => {
           const isCatActive = currentCategory === String(cat).toLowerCase() && currentView === 'list';
+          const colorKey = getListColorKey(cat, new Map(lists.map((l, i) => [
+            String(l.name).toLowerCase(),
+            l.color || LIST_PALETTE[i % LIST_PALETTE.length]
+          ])));
           return (
             <div key={cat} className={`row ${isCatActive ? 'active' : ''}`} role="button" onClick={()=>setQuery({ category: cat, view: 'list', scope: '' })}>
-              <span className={`dot ${['red','cyan','yellow','teal','purple'][idx % 5]}`} />
+              <ListDot colorKey={colorKey} />
               <span className="label">{cat}</span>
               <span className="count-pill">{count || 0}</span>
             </div>
           );
         })}
-        <button className="btn ghost-btn" onClick={async ()=>{ const raw = prompt('New list name'); const name = raw?.trim(); if(name && token){ try { await api.createList(token, name); const lr = await api.listLists(token); setLists(lr.lists||[]); setQuery({ category: name, view: 'list', scope: '' }); } catch(e){ alert(e?.message || 'Failed to create list'); } } }} style={{marginTop:8}}>{t('add_new_list')}</button>
+        <button className="btn ghost-btn" onClick={async ()=>{ const raw = prompt('New list name'); const name = raw?.trim(); if(name && token){ try { const color = LIST_PALETTE[lists.length % LIST_PALETTE.length]; await api.createList(token, name, color); const lr = await api.listLists(token); setLists(lr.lists||[]); setQuery({ category: name, view: 'list', scope: '' }); } catch(e){ alert(e?.message || 'Failed to create list'); } } }} style={{marginTop:8}}>{t('add_new_list')}</button>
       </div>
 
       <div className="group">

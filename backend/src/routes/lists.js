@@ -3,6 +3,8 @@ import { requireAuth } from '../middleware/auth.js';
 import { List } from '../models/List.js';
 import { Task } from '../models/Task.js';
 
+const PALETTE = ['red', 'cyan', 'yellow', 'teal', 'purple', 'pink', 'indigo', 'orange'];
+
 const router = Router();
 router.use(requireAuth);
 
@@ -19,7 +21,9 @@ router.post('/', async (req, res, next) => {
   try {
     const { name, color = '' } = req.body || {};
     if (!name) return res.status(400).json({ error: 'Name is required' });
-    const list = await List.create({ user: req.userId, name, color });
+    const count = await List.countDocuments({ user: req.userId });
+    const listColor = color || PALETTE[count % PALETTE.length];
+    const list = await List.create({ user: req.userId, name, color: listColor });
     return res.status(201).json({ list });
   } catch (err) {
     if (err?.code === 11000) return res.status(409).json({ error: 'List name already exists' });

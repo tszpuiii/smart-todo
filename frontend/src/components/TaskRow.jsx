@@ -1,8 +1,9 @@
 import { useLocale } from '../context/LocaleContext.jsx';
 import EnergyBadge from './EnergyBadge.jsx';
 import PriorityBadge from './PriorityBadge.jsx';
+import CategoryBadge from './CategoryBadge.jsx';
 
-export default function TaskRow({ task, selected, onSelect, onToggle, onOpenDetails, isNew, isRemoving, suggestFirst }) {
+export default function TaskRow({ task, selected, onSelect, onToggle, onOpenDetails, isNew, isRemoving, suggestFirst, listColorKey }) {
   const { t } = useLocale();
   return (
     <div className={`task-row ${selected ? 'selected' : ''} ${isNew ? 'new-row' : ''} ${task.completed ? 'done' : ''} ${isRemoving ? 'removing' : ''} ${suggestFirst ? 'suggest-first' : ''}`} onClick={() => onSelect(task._id)}>
@@ -17,7 +18,7 @@ export default function TaskRow({ task, selected, onSelect, onToggle, onOpenDeta
           <PriorityBadge level={task.priority} />
           {task.dueDate && <span className="meta">{new Date(task.dueDate).toLocaleDateString()}</span>}
           {Array.isArray(task.subtasks) && task.subtasks.length > 0 && <span className="meta">{task.subtasks.length} {t('subtasks')}</span>}
-          {task.category && <span className="tag-pill">{task.category}</span>}
+          {task.category && <CategoryBadge name={task.category} colorKey={listColorKey} />}
         </div>
       </div>
       <button className="chevron-btn" onClick={(e)=>{e.stopPropagation(); onOpenDetails?.(task._id);}} aria-label="open details">›</button>

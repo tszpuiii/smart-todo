@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useLocale } from '../context/LocaleContext.jsx';
 import EnergyBadge from './EnergyBadge.jsx';
+import CategoryBadge from './CategoryBadge.jsx';
 
-export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNew, suggestFirst }) {
+export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNew, suggestFirst, listColorKey }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [category, setCategory] = useState(task.category || 'general');
@@ -52,7 +53,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
           {suggestFirst && <span className="start-here-pill">{t('start_here')}</span>}
           <span className="title">{task.title}</span>
           <EnergyBadge level={task.energyLevel} />
-          <span className="category">{task.category || 'general'}</span>
+          <CategoryBadge name={task.category || 'general'} colorKey={listColorKey} />
           {task.dueDate && (
             <span className="meta" style={{marginLeft:8}}>
               {new Date(task.dueDate).toLocaleDateString()}

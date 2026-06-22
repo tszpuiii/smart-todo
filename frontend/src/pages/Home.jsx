@@ -6,11 +6,13 @@ import { useNavigate } from 'react-router-dom';
 import TaskForm from '../components/TaskForm.jsx';
 import TaskRow from '../components/TaskRow.jsx';
 import { sortTasks, isSuggestFirstTask } from '../utils/sortTasks.js';
+import { buildListColorMap, getListColorKey } from '../utils/listColors.js';
 
 export default function Home() {
   const { token } = useAuth();
   const { t } = useLocale();
   const [tasks, setTasks] = useState([]);
+  const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -19,8 +21,14 @@ export default function Home() {
     async function load() {
       setLoading(true);
       try {
-        const res = await api.listTasks(token, {});
-        if (alive) setTasks(res.tasks || []);
+        const [tasksRes, listsRes] = await Promise.all([
+          api.listTasks(token, {}),
+          api.listLists(token).catch(() => ({ lists: [] }))
+        ]);
+        if (alive) {
+          setTasks(tasksRes.tasks || []);
+          setLists(listsRes.lists || []);
+        }
       } finally {
         if (alive) setLoading(false);
       }
@@ -44,6 +52,9 @@ export default function Home() {
   const totalCount = tasks.length;
   const completedCount = useMemo(() => tasks.filter(x => !!x.completed).length, [tasks]);
   const progress = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const listColorMap = useMemo(() => buildListColorMap(lists), [lists]);
+  const colorForCategory = (category) => getListColorKey(category, listColorMap);
 
   const upNext = useMemo(() => {
     const isExpired = (task) => task.dueDate && new Date(task.dueDate) < startOfToday && !task.completed;
@@ -117,6 +128,7 @@ export default function Home() {
                   onToggle={handleToggle}
                   onSelect={(id) => navigate(`/tasks?view=list`)}
                   suggestFirst={isSuggestFirstTask(task, upNext, index)}
+                  listColorKey={colorForCategory(task.category)}
                 />
               ))}
             </div>
