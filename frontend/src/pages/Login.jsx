@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLocale } from '../context/LocaleContext.jsx';
 
 export default function Login() {
   const { login, loading, error } = useAuth();
+  const { t } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -21,6 +23,10 @@ export default function Login() {
       <div className="top" />
       <div className="bottom" />
       <div className="center">
+        <div className="app-brand">
+          <div className="app-brand-name">{t('app_name')}</div>
+          <div className="app-brand-tagline">{t('app_tagline')}</div>
+        </div>
         <h2>Please Sign In</h2>
         <form onSubmit={onSubmit} className="login-form">
           <input

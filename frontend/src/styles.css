@@ -555,7 +555,24 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .login-container:hover .center,
 .login-container:active .center { opacity: 1; transition-delay: 0.2s; }
 .login-container .center {}
-.login-container .center h2 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+.login-container .center h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: #4a5568; }
+.app-brand { margin-bottom: 18px; }
+.app-brand-name {
+  font-size: clamp(34px, 6vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #3745b5;
+}
+.app-brand-tagline {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.02em;
+}
+[data-theme="dark"] .app-brand-name { color: #93c5fd; }
+[data-theme="dark"] .app-brand-tagline { color: #94a3b8; }
 .login-form input {
   width: 100%;
   padding: 14px 16px;

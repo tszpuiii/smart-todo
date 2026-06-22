@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLocale } from '../context/LocaleContext.jsx';
 
 export default function Register() {
   const { register, loading, error } = useAuth();
+  const { t } = useLocale();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +22,10 @@ export default function Register() {
       <div className="top" />
       <div className="bottom" />
       <div className="center">
+        <div className="app-brand">
+          <div className="app-brand-name">{t('app_name')}</div>
+          <div className="app-brand-tagline">{t('app_tagline')}</div>
+        </div>
         <h2>Create Account</h2>
         <form onSubmit={onSubmit} className="login-form">
           <input

@@ -4,6 +4,8 @@ const LocaleContext = createContext(null);
 
 const MESSAGES = {
   en: {
+    app_name: 'Dayboard',
+    app_tagline: 'Today · Upcoming · Expired',
     header_today: 'Today',
     header_upcoming: 'Upcoming',
     header_expired: 'Expired',
@@ -92,6 +94,8 @@ const MESSAGES = {
     empty_response: 'Empty response',
   },
   'zh-Hant': {
+    app_name: 'Dayboard',
+    app_tagline: '今天 · 即將到來 · 已逾期',
     header_today: '今天',
     header_upcoming: '即將到來',
     header_expired: '已逾期',
