@@ -63,9 +63,9 @@ export default function Home() {
 
   return (
     <div className="page">
-      <div className="page-header" />
-
-      <Hero title={t('home') || 'Home'} />
+      <div className="page-header">
+        <div className="page-title"><span className="icon">🏠</span><h1>{t('home') || 'Home'}</h1></div>
+      </div>
 
       <div className="home-grid">
         <div className="block">
@@ -110,15 +110,6 @@ export default function Home() {
           <TaskForm onCreate={createFromHome} />
         </div>
       </div>
-    </div>
-  );
-}
-
-function Hero({ title, subtitle }) {
-  return (
-    <div className="hero">
-      <div className="hero-title">{title}</div>
-      {subtitle ? <div className="hero-sub">{subtitle}</div> : null}
     </div>
   );
 }

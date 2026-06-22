@@ -55,7 +55,7 @@ body {
 
 /* floating hamburger to show/hide sidebar */
 /* floating hamburger removed */
-.app-content { padding: 8px 16px 32px; }
+.app-content { padding: 8px 16px 32px; width: 100%; max-width: 100%; box-sizing: border-box; }
 
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 10; }
 .topbar-left { display: flex; align-items: center; gap: 8px; }
@@ -134,8 +134,16 @@ body {
 .sidebar.collapsed .btn { background: #fff; border: 1px solid var(--border); }
 
 /* structure */
-.page { display: grid; gap: 16px; }
-.page-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; column-gap: 450px; margin-bottom: 8px; width: 100%; }
+.page { display: grid; gap: 16px; width: 100%; max-width: 100%; }
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  width: 100%;
+}
 .page-title { display: flex; align-items: center; gap: 14px; }
 .page-title .icon { font-size: 28px; line-height: 1; }
 .page-title h1 { margin: 0; font-size: 28px; font-weight: 700; }
@@ -144,8 +152,8 @@ body {
 .hero-title { font-size: clamp(24px, 3vw, 34px); font-weight: 800; }
 .hero-sub { color: var(--muted); margin-top: 2px; }
 
-.home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(980px, 1fr)); gap: 40px; }
-.home-grid .block:first-child { grid-column: 1 / -1; }
+.home-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
+.home-grid .block:first-child { grid-column: auto; }
 .summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .summary-card { border: 2px solid var(--border); border-radius: 14px; padding: 16px; background: var(--surface); }
 .summary-card .summary-top { display: flex; align-items: center; justify-content: space-between; }
@@ -332,7 +340,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .column .task .title,
 .column .task .category,
 .column .task .meta { max-width: 100%; }
-.column .inline-input { width: auto; flex: 1; min-width: 0; max-width: 100%; }
+.column .inline-input { width: 100%; flex: 1 1 100%; min-width: 0; max-width: 100%; }
+.column .task > .inline-input { flex: 1 1 calc(50% - 5px); }
 
 /* Notion-like column tint */
 .column.todo { background: #fff7f7; border-color: #f3d4d4; }
@@ -361,13 +370,20 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .badge { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 4px 8px; font-size: 12px; color: var(--muted); background: var(--surface); }
 
 /* three-pane layout */
-.workspace { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); 
-  gap: 16px; 
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+.workspace.split {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  align-items: start;
 }
 .workspace.one-col { grid-template-columns: 1fr; }
 .workspace.one-col .drawer { display: none; }
+.workspace.split .list-pane,
+.workspace.split .drawer { min-width: 0; }
 .pane { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
 .list-pane { min-height: 480px; }
 .details-pane { }
@@ -425,10 +441,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .details-empty { color: var(--muted); padding: 12px; }
 
 /* slide-out drawer on right */
-.drawer { position: relative; }
-.drawer .details-pane { position: sticky; top: 72px; }
-.drawer { transform: translateX(8px); transition: all .2s ease; opacity: 0; width: 0; }
-.drawer.open { opacity: 1; width: auto; transform: translateX(0); }
+.drawer { min-width: 0; }
+.drawer .details-pane { position: sticky; top: 16px; }
 .chevron-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 2px 8px; }
 
 .cal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }

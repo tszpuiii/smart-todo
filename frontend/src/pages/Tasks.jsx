@@ -298,7 +298,7 @@ export default function Tasks() {
         ) : error ? (
           <div className="error">{error}</div>
         ) : view === 'list' ? (
-          <div className={`workspace ${detailsVisible ? '' : 'one-col'}`}>
+          <div className={`workspace ${detailsVisible ? 'split' : 'one-col'}`}>
             <div className="pane list-pane">
               <div className="list-header">
                 <button className="btn ghost-btn" onClick={() => setShowForm(true)}>{t('add_new_task')}</button>
@@ -387,8 +387,8 @@ export default function Tasks() {
             </tbody>
           </table>
         ) : view === 'calendar' ? (
-          <div className="workspace">
-            <div className="pane list-pane" style={{gridColumn:'1 / -1'}}>
+          <div className="workspace one-col">
+            <div className="pane list-pane">
               <Calendar
                 tasks={tasks}
                 monthDate={calendarMonth}
@@ -397,7 +397,7 @@ export default function Tasks() {
                 onSelectDate={setCalendarSelected}
               />
             </div>
-            <div className="pane details-pane" style={{gridColumn:'1 / -1'}}>
+            <div className="pane details-pane">
               <div className="list-header" style={{display:'flex', alignItems:'center', gap:8}}>
                 <div style={{fontWeight:600}}>{t('select_date')}：{calendarSelected ? `${calendarSelected.getFullYear()}-${String(calendarSelected.getMonth()+1).padStart(2,'0')}-${String(calendarSelected.getDate()).padStart(2,'0')}` : t('not_selected')}</div>
                 <div className="spacer" />
