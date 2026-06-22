@@ -35,8 +35,10 @@ export default function Tasks() {
   const navigate = useNavigate();
   const { t } = useLocale();
 
-  async function reload() {
-    setLoading(true); setError('');
+  async function reload(opts = {}) {
+    const { silent = false } = opts;
+    if (!silent) setLoading(true);
+    setError('');
     try {
       const filters = {};
       if (categoryFilter) filters.category = categoryFilter;
@@ -46,7 +48,7 @@ export default function Tasks() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }
 
@@ -125,7 +127,7 @@ export default function Tasks() {
       enhanced.dueDate = `${yyyy}-${mm}-${dd}`;
     }
     const res = await api.createTask(token, enhanced);
-    await reload();
+    await reload({ silent: true });
     if (res?.task?._id) setSelectedId(res.task._id);
     if (res?.task?._id) setNewlyCreatedId(res.task._id);
     try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
@@ -133,22 +135,41 @@ export default function Tasks() {
 
   async function handleUpdate(id, payload) {
     await api.updateTask(token, id, payload);
-    await reload();
+    await reload({ silent: true });
     try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
     if (detailsOpen) setDetailsOpen(false);
   }
 
   async function handleToggle(id) {
-    await api.toggleTask(token, id);
-    await reload();
-    try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
+    const prev = tasks;
+    setTasks((curr) =>
+      curr.map((t) => {
+        if (t._id !== id) return t;
+        const completed = !t.completed;
+        return {
+          ...t,
+          completed,
+          status: completed ? 'done' : t.status === 'done' ? 'todo' : t.status
+        };
+      })
+    );
+    try {
+      const res = await api.toggleTask(token, id);
+      if (res?.task) {
+        setTasks((curr) => curr.map((t) => (t._id === id ? res.task : t)));
+      }
+      try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
+    } catch (err) {
+      setTasks(prev);
+      setError(err.message);
+    }
   }
 
   async function handleDelete(id) {
     setRemovingId(id);
     setTimeout(async () => {
       await api.deleteTask(token, id);
-      await reload();
+      await reload({ silent: true });
       setRemovingId('');
       try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
     }, 280);
@@ -166,7 +187,7 @@ export default function Tasks() {
     ids.splice(to, 0, ids.splice(from, 1)[0]);
     await api.reorderTasks(token, ids);
     setDraggedId(null);
-    await reload();
+    await reload({ silent: true });
   }
 
   const categories = useMemo(() => {

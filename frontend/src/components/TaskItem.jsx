@@ -40,7 +40,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
         onDragOver={dnd ? (e) => dnd.onDragOver(e) : undefined}
         onDrop={dnd ? () => dnd.onDrop(task._id) : undefined}
     >
-      <input type="checkbox" checked={task.completed} onChange={() => onToggle(task._id)} />
+      <input type="checkbox" checked={task.completed} onChange={(e) => { e.stopPropagation(); onToggle(task._id); }} />
       {editing ? (
         <>
           <input className="inline-input" value={title} onChange={(e) => setTitle(e.target.value)} />
