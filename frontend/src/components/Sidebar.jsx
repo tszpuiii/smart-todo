@@ -114,7 +114,7 @@ export default function Sidebar({ open = true, onToggle, onOpenSettings }) {
   return (
     <aside className={`sidebar ${open ? '' : 'collapsed'}`}>
       <div className="sidebar-title">
-        <div className="title">{t('app_name')}</div>
+        <div className="title">{t('app_name_short')}</div>
         <button className="btn ghost-btn" aria-label="menu" onClick={onToggle}>≡</button>
       </div>
 

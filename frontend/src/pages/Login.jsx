@@ -25,7 +25,6 @@ export default function Login() {
       <div className="center">
         <div className="app-brand">
           <div className="app-brand-name">{t('app_name')}</div>
-          <div className="app-brand-tagline">{t('app_tagline')}</div>
         </div>
         <h2>Please Sign In</h2>
         <form onSubmit={onSubmit} className="login-form">
