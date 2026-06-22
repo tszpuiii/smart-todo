@@ -20,3 +20,15 @@ export function compareTaskPriority(a, b) {
 export function sortTasks(tasks) {
   return tasks.slice().sort(compareTaskPriority);
 }
+
+/** ID of the first incomplete task in a rendered list (for Start here). */
+export function findSuggestFirstId(taskList) {
+  const first = taskList.find(t => !t.completed);
+  return first?._id != null ? String(first._id) : '';
+}
+
+export function isSuggestFirstTask(task, taskList, index) {
+  if (task.completed) return false;
+  const firstIdx = taskList.findIndex(t => !t.completed);
+  return firstIdx !== -1 && index === firstIdx;
+}

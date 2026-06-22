@@ -10,7 +10,7 @@ import TaskDetails from '../components/TaskDetails.jsx';
 import Calendar from '../components/Calendar.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
-import { sortTasks } from '../utils/sortTasks.js';
+import { sortTasks, findSuggestFirstId, isSuggestFirstTask } from '../utils/sortTasks.js';
 
 export default function Tasks() {
   const { token, user } = useAuth();
@@ -89,16 +89,17 @@ export default function Tasks() {
     const params = new URLSearchParams(location.search);
     const scope = params.get('scope') || '';
     const energy = params.get('energy') || '';
-    if (energy === 'low') return { emoji: '🟢', title: t('energy_low'), subtitle: t('sorted_by_priority') };
-    if (energy === 'medium') return { emoji: '🟡', title: t('energy_medium'), subtitle: t('sorted_by_priority') };
-    if (energy === 'high') return { emoji: '🔴', title: t('energy_high'), subtitle: t('sorted_by_priority') };
-    if (view === 'calendar') return { emoji: '📅', title: t('header_calendar') };
-    if (view === 'board') return { emoji: '🧱', title: t('header_board') };
-    if (scope === 'today') return { emoji: '📌', title: t('header_today') };
-    if (scope === 'upcoming') return { emoji: '⏭️', title: t('header_upcoming') };
-    if (scope === 'expired') return { emoji: '⚠️', title: t('header_expired') };
-    if (categoryFilter) return { emoji: '🗂️', title: categoryFilter };
-    return { emoji: '📝', title: t('header_tasks') };
+    const sortSubtitle = t('sorted_by_priority');
+    if (energy === 'low') return { emoji: '🟢', title: t('energy_low'), subtitle: sortSubtitle };
+    if (energy === 'medium') return { emoji: '🟡', title: t('energy_medium'), subtitle: sortSubtitle };
+    if (energy === 'high') return { emoji: '🔴', title: t('energy_high'), subtitle: sortSubtitle };
+    if (view === 'calendar') return { emoji: '📅', title: t('header_calendar'), subtitle: sortSubtitle };
+    if (view === 'board') return { emoji: '🧱', title: t('header_board'), subtitle: sortSubtitle };
+    if (scope === 'today') return { emoji: '📌', title: t('header_today'), subtitle: sortSubtitle };
+    if (scope === 'upcoming') return { emoji: '⏭️', title: t('header_upcoming'), subtitle: sortSubtitle };
+    if (scope === 'expired') return { emoji: '⚠️', title: t('header_expired'), subtitle: sortSubtitle };
+    if (categoryFilter) return { emoji: '🗂️', title: categoryFilter, subtitle: sortSubtitle };
+    return { emoji: '📝', title: t('header_tasks'), subtitle: sortSubtitle };
   }, [location.search, view, categoryFilter, t]);
 
   // 取得目前選中的 List ID 以便刪除
@@ -268,12 +269,13 @@ export default function Tasks() {
 
   const detailsVisible = detailsOpen && filteredTasks.length > 0;
 
-  const suggestFirstId = useMemo(() => {
-    const energy = new URLSearchParams(location.search).get('energy') || '';
-    if (!energy) return '';
-    const first = filteredTasks.find(t => !t.completed);
-    return first?._id || '';
-  }, [filteredTasks, location.search]);
+  const globalSuggestFirstId = useMemo(() => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const isExpired = (task) => task.dueDate && new Date(task.dueDate) < startOfToday && !task.completed;
+    const candidates = sortTasks(tasks.filter(task => !task.completed && !isExpired(task)));
+    return findSuggestFirstId(candidates);
+  }, [tasks]);
 
   return (
     <div className="page">
@@ -363,8 +365,8 @@ export default function Tasks() {
                   // 在「已逾期」頁，直接渲染逾期清單
                   return (
                     <div className="rows expired">
-                      {filteredTasks.map(row => (
-                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} />
+                      {filteredTasks.map((row, index) => (
+                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, filteredTasks, index)} />
                       ))}
                       {filteredTasks.length === 0 && <div className="muted">{t('no_tasks')}</div>}
                     </div>
@@ -373,8 +375,8 @@ export default function Tasks() {
                 return (
                   <>
                     <div className="rows">
-                      {activeList.map(row => (
-                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} suggestFirst={row._id===suggestFirstId} />
+                      {activeList.map((row, index) => (
+                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} suggestFirst={!showExpiredSection && isSuggestFirstTask(row, activeList, index)} />
                       ))}
                       {activeList.length === 0 && !showExpiredSection && <div className="muted">{t('no_tasks')}</div>}
                     </div>
@@ -382,8 +384,8 @@ export default function Tasks() {
                       <>
                         <div className="board-heading expired">{t('header_expired')}</div>
                         <div className="rows expired">
-                          {expiredList.map(row => (
-                            <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} />
+                          {expiredList.map((row, index) => (
+                            <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(row, expiredList, index)} />
                           ))}
                         </div>
                       </>
@@ -453,8 +455,8 @@ export default function Tasks() {
                 </div>
               )}
               <div className="rows">
-                {filteredTasks.map(t => (
-                  <TaskRow key={t._id} task={t} selected={t._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} />
+                {filteredTasks.map((t, index) => (
+                  <TaskRow key={t._id} task={t} selected={t._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} suggestFirst={isSuggestFirstTask(t, filteredTasks, index)} />
                 ))}
                 {filteredTasks.length === 0 && <div className="muted">{t('no_tasks_for_day')}</div>}
               </div>
@@ -482,8 +484,9 @@ export default function Tasks() {
                   <span style={{marginLeft:8}} className="badge">{groupedByStatus[col].length}</span>
                 </div>
                 <ul className="list">
-                  {groupedByStatus[col].map((t) => (
-                    <TaskItem key={t._id} task={t} isNew={newlyCreatedId===t._id}
+                  {groupedByStatus[col].map((task) => (
+                    <TaskItem key={task._id} task={task} isNew={newlyCreatedId===task._id}
+                      suggestFirst={!task.completed && String(task._id) === globalSuggestFirstId}
                       onToggle={handleToggle}
                       onUpdate={handleUpdate}
                       onDelete={handleDelete}

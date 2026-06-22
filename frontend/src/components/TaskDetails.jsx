@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocale } from '../context/LocaleContext.jsx';
 
 export default function TaskDetails({ task, onSave, onDelete }) {
+  const { t } = useLocale();
   const [local, setLocal] = useState(task);
   useEffect(() => setLocal(task), [task]);
 
@@ -53,17 +55,17 @@ export default function TaskDetails({ task, onSave, onDelete }) {
         <div className="field">
           <label>Energy</label>
           <select value={local.energyLevel || 'medium'} onChange={(e)=>change('energyLevel', e.target.value)}>
-            <option value="low">🟢 Low energy / Admin</option>
-            <option value="medium">🟡 Medium focus</option>
-            <option value="high">🔴 Deep focus / Strategy</option>
+            <option value="low">🟢 {t('energy_low')}</option>
+            <option value="medium">🟡 {t('energy_medium')}</option>
+            <option value="high">🔴 {t('energy_high')}</option>
           </select>
         </div>
         <div className="field">
-          <label>Priority</label>
+          <label>{t('form_priority')}</label>
           <select value={local.priority || 'medium'} onChange={(e)=>change('priority', e.target.value)}>
-            <option value="high">🔥 High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+            <option value="high">🔥 {t('priority_high')}</option>
+            <option value="medium">{t('priority_medium')}</option>
+            <option value="low">{t('priority_low')}</option>
           </select>
         </div>
       </div>

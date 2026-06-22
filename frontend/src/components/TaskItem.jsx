@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocale } from '../context/LocaleContext.jsx';
 import EnergyBadge from './EnergyBadge.jsx';
 
-export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNew }) {
+export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNew, suggestFirst }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [category, setCategory] = useState(task.category || 'general');
@@ -35,7 +35,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
   }
 
   return (
-    <li className={`task energy-${task.energyLevel || 'medium'} ${task.completed ? 'done' : ''} ${isNew ? 'new-task' : ''} ${removing ? 'removing' : ''}`}
+    <li className={`task energy-${task.energyLevel || 'medium'} ${task.completed ? 'done' : ''} ${isNew ? 'new-task' : ''} ${removing ? 'removing' : ''} ${suggestFirst ? 'suggest-first' : ''}`}
         draggable={!!dnd}
         onDragStart={dnd ? () => dnd.onDragStart(task._id) : undefined}
         onDragOver={dnd ? (e) => dnd.onDragOver(e) : undefined}
@@ -49,6 +49,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
         </>
       ) : (
         <>
+          {suggestFirst && <span className="start-here-pill">{t('start_here')}</span>}
           <span className="title">{task.title}</span>
           <EnergyBadge level={task.energyLevel} />
           <span className="category">{task.category || 'general'}</span>

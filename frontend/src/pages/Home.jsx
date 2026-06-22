@@ -4,6 +4,8 @@ import { api } from '../api/client.js';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import TaskForm from '../components/TaskForm.jsx';
+import TaskRow from '../components/TaskRow.jsx';
+import { sortTasks, isSuggestFirstTask } from '../utils/sortTasks.js';
 
 export default function Home() {
   const { token } = useAuth();
@@ -24,7 +26,9 @@ export default function Home() {
       }
     }
     if (token) load();
-    return () => { alive = false; };
+    function onChanged() { if (alive) load(); }
+    window.addEventListener('tasks:changed', onChanged);
+    return () => { alive = false; window.removeEventListener('tasks:changed', onChanged); };
   }, [token]);
 
   const now = new Date();
@@ -40,11 +44,10 @@ export default function Home() {
   const totalCount = tasks.length;
   const completedCount = useMemo(() => tasks.filter(x => !!x.completed).length, [tasks]);
   const progress = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
-  const recent = useMemo(() => {
-    return tasks
-      .slice()
-      .sort((a,b) => new Date(b.updatedAt||b.createdAt) - new Date(a.updatedAt||a.createdAt))
-      .slice(0, 5);
+
+  const upNext = useMemo(() => {
+    const isExpired = (task) => task.dueDate && new Date(task.dueDate) < startOfToday && !task.completed;
+    return sortTasks(tasks.filter(task => !task.completed && !isExpired(task))).slice(0, 5);
   }, [tasks]);
 
   function goTo(scope) {
@@ -61,10 +64,23 @@ export default function Home() {
     setTasks(res.tasks || []);
   }
 
+  async function handleToggle(id) {
+    await api.toggleTask(token, id);
+    const res = await api.listTasks(token, {});
+    setTasks(res.tasks || []);
+    try { window.dispatchEvent(new Event('tasks:changed')); } catch {}
+  }
+
   return (
     <div className="page">
       <div className="page-header">
-        <div className="page-title"><span className="icon">🏠</span><h1>{t('home') || 'Home'}</h1></div>
+        <div className="page-title">
+          <span className="icon">🏠</span>
+          <div>
+            <h1>{t('home') || 'Home'}</h1>
+            <div className="page-subtitle muted">{t('sorted_by_priority')}</div>
+          </div>
+        </div>
       </div>
 
       <div className="home-grid">
@@ -91,17 +107,19 @@ export default function Home() {
         </div>
 
         <div className="block">
-          <div className="muted" style={{marginBottom:8}}>{t('recent')}</div>
-          {recent.length === 0 ? <div className="muted">{t('no_tasks')}</div> : (
-            <ul className="list">
-              {recent.map(x => (
-                <li key={x._id} className="task" style={{padding:'6px 10px'}}>
-                  <span className="title">{x.title}</span>
-                  {x.category && <span className="category" style={{marginLeft:8}}>{x.category}</span>}
-                  {x.dueDate && <span className="meta" style={{marginLeft:8}}>{new Date(x.dueDate).toLocaleDateString()}</span>}
-                </li>
+          <div className="muted" style={{marginBottom:8}}>{t('up_next')}</div>
+          {upNext.length === 0 ? <div className="muted">{t('no_tasks')}</div> : (
+            <div className="rows">
+              {upNext.map((task, index) => (
+                <TaskRow
+                  key={task._id}
+                  task={task}
+                  onToggle={handleToggle}
+                  onSelect={(id) => navigate(`/tasks?view=list`)}
+                  suggestFirst={isSuggestFirstTask(task, upNext, index)}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </div>
 
@@ -125,5 +143,3 @@ function SummaryCard({ label, value, icon }) {
     </div>
   );
 }
-
-

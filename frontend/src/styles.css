@@ -533,6 +533,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 [data-theme="dark"] .priority-pill.priority-high { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color: #fca5a5; }
 [data-theme="dark"] .start-here-pill { background: rgba(59,130,246,.2); color: #93c5fd; }
 [data-theme="dark"] .task-row.suggest-first { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.35); }
+.column .task.suggest-first { border-color: #93c5fd; background: #eff6ff; }
+.column .task .start-here-pill { margin-right: 6px; }
+[data-theme="dark"] .column .task.suggest-first { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.35); }
 [data-theme="dark"] .energy-pill.energy-low { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: #6ee7b7; }
 [data-theme="dark"] .energy-pill.energy-medium { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.35); color: #fcd34d; }
 [data-theme="dark"] .energy-pill.energy-high { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color: #fca5a5; }
