@@ -186,6 +186,27 @@ body {
 /* Blocks */
 .block { border: 2px solid var(--border); border-radius: 14px; background: var(--surface); padding: 16px; width: 100%; }
 .block + .block { margin-top: 8px; }
+/* List/calendar: one outer border only — drop inner pane box */
+.block:has(.workspace) .list-pane {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+.block:has(.workspace.split) .details-pane {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--surface);
+}
+.block:has(.workspace) .workspace.one-col .details-pane {
+  border: none;
+  border-radius: 0;
+  padding: 12px 0 0;
+  background: transparent;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+}
 
 .form { display: grid; gap: 10px; }
 label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
@@ -423,9 +444,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 }
 
 /* Zebra striping and hover highlight for list rows (CSS-only) */
-.rows > *:nth-child(odd) { background: #fafafa; border-radius: 8px; }
-[data-theme="dark"] .rows > *:nth-child(odd) { background: #0f1628; }
-.rows > *:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.rows > *:nth-child(odd) { background: transparent; border-radius: 8px; }
+[data-theme="dark"] .rows > *:nth-child(odd) { background: transparent; }
+.rows > *:hover { box-shadow: none; }
 
 .details { display: grid; gap: 12px; }
 .details .field { display: grid; gap: 6px; }
@@ -528,7 +549,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .task-row.suggest-first {
   border-color: #93c5fd;
   background: #eff6ff;
+  box-shadow: none;
 }
+.task-row.suggest-first:hover { border-color: #93c5fd; background: #eff6ff; }
 .page-subtitle { font-size: 13px; margin-top: 2px; font-weight: 400; }
 [data-theme="dark"] .priority-pill.priority-high { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color: #fca5a5; }
 [data-theme="dark"] .start-here-pill { background: rgba(59,130,246,.2); color: #93c5fd; }
