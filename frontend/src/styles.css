@@ -419,9 +419,6 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .drawer.open { opacity: 1; width: auto; transform: translateX(0); }
 .chevron-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 2px 8px; }
 
-/* Calendar */
-.calendar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-[data-theme="dark"] .calendar { background: #0f1628; }
 .cal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .cal-title { font-weight: 700; }
 .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); color: var(--muted); font-size: 12px; margin-bottom: 4px; }

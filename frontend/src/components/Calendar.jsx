@@ -26,8 +26,8 @@ export default function Calendar({ tasks = [], monthDate, onMonthChange, selecte
       const dayTasks = tasks.filter(t => t.dueDate && startOfDay(t.dueDate).getTime() === startOfDay(date).getTime());
       arr.push({ date, tasks: dayTasks });
     }
-    // pad to 6 weeks grid
-    while (arr.length % 7 !== 0 || arr.length < 42) arr.push({ date: null, tasks: [] });
+    // pad to complete the last week only
+    while (arr.length % 7 !== 0) arr.push({ date: null, tasks: [] });
     return arr;
   }, [tasks, year, monthIdx, daysInMonth, firstWeekday]);
 
