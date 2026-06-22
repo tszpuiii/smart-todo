@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import { connectToDatabase } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import taskRoutes from './routes/tasks.js';
-import aiRoutes from './routes/ai.js';
 import listRoutes from './routes/lists.js';
 import weatherRoutes from './routes/weather.js';
 
@@ -30,7 +29,6 @@ app.get('/api/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
-app.use('/api/ai', aiRoutes);
 app.use('/api/lists', listRoutes);
 app.use('/api/weather', weatherRoutes);
 

@@ -76,9 +76,6 @@ export const api = {
   async reorderTasks(token, orderedIds) {
     return request('POST', '/tasks/reorder', { orderedIds }, token);
   },
-  async aiSuggest(token, payload) {
-    return request('POST', '/ai/suggest', payload, token);
-  },
   // Lists
   async listLists(token) {
     return request('GET', '/lists', undefined, token);
