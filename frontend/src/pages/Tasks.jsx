@@ -10,6 +10,7 @@ import TaskDetails from '../components/TaskDetails.jsx';
 import Calendar from '../components/Calendar.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
+import { sortTasks } from '../utils/sortTasks.js';
 
 export default function Tasks() {
   const { token, user } = useAuth();
@@ -88,9 +89,9 @@ export default function Tasks() {
     const params = new URLSearchParams(location.search);
     const scope = params.get('scope') || '';
     const energy = params.get('energy') || '';
-    if (energy === 'low') return { emoji: '🟢', title: t('energy_low') };
-    if (energy === 'medium') return { emoji: '🟡', title: t('energy_medium') };
-    if (energy === 'high') return { emoji: '🔴', title: t('energy_high') };
+    if (energy === 'low') return { emoji: '🟢', title: t('energy_low'), subtitle: t('sorted_by_priority') };
+    if (energy === 'medium') return { emoji: '🟡', title: t('energy_medium'), subtitle: t('sorted_by_priority') };
+    if (energy === 'high') return { emoji: '🔴', title: t('energy_high'), subtitle: t('sorted_by_priority') };
     if (view === 'calendar') return { emoji: '📅', title: t('header_calendar') };
     if (view === 'board') return { emoji: '🧱', title: t('header_board') };
     if (scope === 'today') return { emoji: '📌', title: t('header_today') };
@@ -214,9 +215,9 @@ export default function Tasks() {
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const isExpired = (t) => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed;
     return {
-      todo: visibleTasks.filter(t => (t.status || 'todo') === 'todo' && !isExpired(t)),
-      doing: visibleTasks.filter(t => t.status === 'doing' && !isExpired(t)),
-      done: visibleTasks.filter(t => t.status === 'done')
+      todo: sortTasks(visibleTasks.filter(t => (t.status || 'todo') === 'todo' && !isExpired(t))),
+      doing: sortTasks(visibleTasks.filter(t => t.status === 'doing' && !isExpired(t))),
+      done: sortTasks(visibleTasks.filter(t => t.status === 'done'))
     };
   }, [visibleTasks]);
 
@@ -252,38 +253,38 @@ export default function Tasks() {
     } else if (scope === 'upcoming') {
       const now = new Date();
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      // Show ALL tasks (completed or not) that are scheduled for today/future, or without due date
       list = list.filter(t => (!t.dueDate || new Date(t.dueDate) >= startOfToday));
-      // Sort by due date (undefined at the end) and keep completed after incomplete if same date
-      list = list.slice().sort((a,b) => {
-        const da = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-        const db = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-        if (da !== db) return da - db;
-        if (a.completed !== b.completed) return a.completed ? 1 : -1;
-        const oa = typeof a.order === 'number' ? a.order : 0;
-        const ob = typeof b.order === 'number' ? b.order : 0;
-        return oa - ob;
-      });
     } else if (scope === 'expired') {
       const now = new Date();
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      // Show overdue, not completed
       list = list.filter(t => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed);
-      list = list.slice().sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
     }
     if (view === 'calendar' && calendarSelected) {
       const y = calendarSelected.getFullYear(), m = calendarSelected.getMonth(), d = calendarSelected.getDate();
       list = list.filter(t => t.dueDate && new Date(t.dueDate).getFullYear()===y && new Date(t.dueDate).getMonth()===m && new Date(t.dueDate).getDate()===d);
     }
-    return list;
+    return sortTasks(list);
   }, [tasks, location.search, search, view, calendarSelected]);
 
   const detailsVisible = detailsOpen && filteredTasks.length > 0;
 
+  const suggestFirstId = useMemo(() => {
+    const energy = new URLSearchParams(location.search).get('energy') || '';
+    if (!energy) return '';
+    const first = filteredTasks.find(t => !t.completed);
+    return first?._id || '';
+  }, [filteredTasks, location.search]);
+
   return (
     <div className="page">
       <div className="page-header">
-        <div className="page-title"><span className="icon">{header.emoji}</span><h1>{header.title}</h1></div>
+        <div className="page-title">
+          <span className="icon">{header.emoji}</span>
+          <div>
+            <h1>{header.title}</h1>
+            {header.subtitle && <div className="page-subtitle muted">{header.subtitle}</div>}
+          </div>
+        </div>
         <div className="toolbar">
           <div className="chip">
             {t('header_category')}
@@ -373,7 +374,7 @@ export default function Tasks() {
                   <>
                     <div className="rows">
                       {activeList.map(row => (
-                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} />
+                        <TaskRow key={row._id} task={row} selected={row._id===selectedId} onSelect={setSelectedId} onToggle={handleToggle} onOpenDetails={(id)=>{ setSelectedId(id); setDetailsOpen(true); }} isNew={newlyCreatedId===row._id} isRemoving={removingId===row._id} suggestFirst={row._id===suggestFirstId} />
                       ))}
                       {activeList.length === 0 && !showExpiredSection && <div className="muted">{t('no_tasks')}</div>}
                     </div>

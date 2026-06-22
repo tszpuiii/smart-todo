@@ -26,7 +26,7 @@ router.get('/', async (req, res, next) => {
 // Create task
 router.post('/', async (req, res, next) => {
   try {
-    const { title, description = '', category = 'general', status = 'todo', energyLevel = 'medium', tags = [], subtasks = [], notes = '', dueDate } = req.body;
+    const { title, description = '', category = 'general', status = 'todo', energyLevel = 'medium', priority = 'medium', tags = [], subtasks = [], notes = '', dueDate } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
     const task = await Task.create({
       user: req.userId,
@@ -35,6 +35,7 @@ router.post('/', async (req, res, next) => {
       category,
       status,
       energyLevel,
+      priority,
       tags,
       subtasks,
       notes,
@@ -51,7 +52,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
     const update = {};
-    const allowed = ['title', 'description', 'category', 'status', 'energyLevel', 'tags', 'subtasks', 'notes', 'completed', 'dueDate'];
+    const allowed = ['title', 'description', 'category', 'status', 'energyLevel', 'priority', 'tags', 'subtasks', 'notes', 'completed', 'dueDate'];
     for (const key of allowed) {
       if (key in req.body) update[key] = req.body[key];
     }

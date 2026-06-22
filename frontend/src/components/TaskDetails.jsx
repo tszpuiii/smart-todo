@@ -20,6 +20,7 @@ export default function TaskDetails({ task, onSave, onDelete }) {
     category: local.category,
     status: local.status,
     energyLevel: local.energyLevel || 'medium',
+    priority: local.priority || 'medium',
     dueDate: local.dueDate,
     notes: local.notes,
     tags: local.tags,
@@ -55,6 +56,14 @@ export default function TaskDetails({ task, onSave, onDelete }) {
             <option value="low">🟢 Low energy / Admin</option>
             <option value="medium">🟡 Medium focus</option>
             <option value="high">🔴 Deep focus / Strategy</option>
+          </select>
+        </div>
+        <div className="field">
+          <label>Priority</label>
+          <select value={local.priority || 'medium'} onChange={(e)=>change('priority', e.target.value)}>
+            <option value="high">🔥 High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
           </select>
         </div>
       </div>

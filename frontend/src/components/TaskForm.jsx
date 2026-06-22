@@ -9,6 +9,7 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '', ini
   const [status, setStatus] = useState('todo');
   const [energyLevel, setEnergyLevel] = useState(initialEnergy);
   const [energyTouched, setEnergyTouched] = useState(false);
+  const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [subtasks, setSubtasks] = useState([]);
@@ -34,9 +35,9 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '', ini
     e.preventDefault();
     setSubmitting(true);
     try {
-      await onCreate({ title, description, category, status, energyLevel, notes, subtasks, dueDate: dueDate || undefined });
+      await onCreate({ title, description, category, status, energyLevel, priority, notes, subtasks, dueDate: dueDate || undefined });
       setTitle(''); setDescription(''); setCategory(initialCategory || 'general'); setStatus('todo');
-      setEnergyLevel(initialEnergy); setEnergyTouched(false); setDueDate(''); setNotes(''); setSubtasks([]);
+      setEnergyLevel(initialEnergy); setEnergyTouched(false); setPriority('medium'); setDueDate(''); setNotes(''); setSubtasks([]);
       if (onCancel) onCancel();
     } finally {
       setSubmitting(false);
@@ -71,6 +72,13 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '', ini
           <option value="high">🔴 {t('energy_high')}</option>
         </select>
         {showAutoHint && <span className="muted" style={{ fontSize: 12, marginTop: 4, display: 'block' }}>{t('form_energy_auto_hint')}</span>}
+      </label>
+      <label>{t('form_priority')}
+        <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+          <option value="high">🔥 {t('priority_high')}</option>
+          <option value="medium">{t('priority_medium')}</option>
+          <option value="low">{t('priority_low')}</option>
+        </select>
       </label>
       <label>{t('form_due')}
         <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} min="1000-01-01" max="9999-12-31" />
