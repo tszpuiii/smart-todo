@@ -42,7 +42,7 @@ export default function Tasks() {
       if (categoryFilter) filters.category = categoryFilter;
       if (completedFilter !== 'all') filters.completed = completedFilter === 'true';
       const res = await api.listTasks(token, filters);
-      setTasks(res.tasks);
+      setTasks(res.tasks || []);
     } catch (err) {
       setError(err.message);
     } finally {

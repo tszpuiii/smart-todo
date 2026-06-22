@@ -1,17 +1,38 @@
 const API_BASE = import.meta.env?.VITE_API_BASE || '/api';
 
+function parseResponseBody(text) {
+  const trimmed = text.trim();
+  if (!trimmed) return {};
+  if (trimmed.startsWith('<')) {
+    throw new Error(
+      'API is unreachable. Deploy the backend and point Vercel to it (see DEPLOY.md).'
+    );
+  }
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    throw new Error('Unexpected API response. Check backend URL and deployment settings.');
+  }
+}
+
 async function request(method, path, body, token) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined
+    });
+  } catch {
+    throw new Error('Network error. Is the API server running?');
+  }
 
   if (res.status === 204) return null;
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  const data = parseResponseBody(text);
   if (!res.ok) {
     const message = data?.error || `Request failed with ${res.status}`;
     throw new Error(message);

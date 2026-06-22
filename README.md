@@ -100,6 +100,8 @@ npm run build
 Backend typically runs as a service (no build step required).
 
 ## Deployment (quick suggestion)
+See **[DEPLOY.md](./DEPLOY.md)** for step-by-step Vercel + Render + MongoDB Atlas setup (fixes login/API issues on production).
+
 - Backend: Render/Railway/Fly.io
   - Set env vars `PORT`, `MONGO_URI`, `JWT_SECRET`, `OPENWEATHER_API_KEY`.
   - Also set `CORS_ORIGIN=https://<your-frontend-domain>`

@@ -448,7 +448,6 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 }
 
 /* ---------------- Login fancy landing ---------------- */
-@import url('https://fonts.googleapis.com/css?family=Raleway:400,700');
 .login-container {
   position: fixed;
   inset: 0;

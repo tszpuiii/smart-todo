@@ -30,6 +30,7 @@ export function AuthProvider({ children }) {
     setLoading(true); setError('');
     try {
       const res = await api.login({ email, password });
+      if (!res?.token) throw new Error('Invalid login response from server');
       setToken(res.token);
       setUser(res.user);
       return true;
@@ -45,6 +46,7 @@ export function AuthProvider({ children }) {
     setLoading(true); setError('');
     try {
       const res = await api.register({ name, email, password });
+      if (!res?.token) throw new Error('Invalid register response from server');
       setToken(res.token);
       setUser(res.user);
       return true;
