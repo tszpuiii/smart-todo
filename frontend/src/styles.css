@@ -460,6 +460,15 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .cal-pill { font-size: 12px; border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .more { color: var(--muted); font-size: 12px; }
 
+/* Weather */
+.weather-location {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  padding: 4px 0 8px;
+}
+
 /* Tidy custom scrollbars */
 .sidebar, .app-content, .board, .calendar { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 .sidebar::-webkit-scrollbar, .app-content::-webkit-scrollbar { width: 8px; height: 8px; }

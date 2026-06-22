@@ -15,7 +15,7 @@ I often miss small deadlines because overdue tasks sit in the same list as every
 
 ## One thing you would improve or add if you had more time
 
-**Calendar sync (e.g. Google Calendar / Outlook)** — many of my real deadlines already live in calendar blocks (meetings, class, client calls). Right now I set due dates manually, so tasks and calendar can drift apart. With two-way sync, a meeting on my calendar could auto-create or surface a related task in *Today*, and completing a task could update the calendar event. That would close the gap between “what’s on my schedule” and “what I still need to do,” which is the next step after splitting tasks by date.
+**Due-date notifications** — the Today / Upcoming / Expired views only help when I open the app. I would add lightweight reminders: a nudge in the morning for tasks due *today*, a heads-up 1–2 days before something in *Upcoming*, and an alert when a task is *about to expire* (e.g. due tomorrow and still incomplete) or has just slipped into *Expired*. That way I do not have to remember to check the right view — the app meets me where I already am (browser notification or email), which is the natural next step after splitting tasks by date.
 
 ---
 

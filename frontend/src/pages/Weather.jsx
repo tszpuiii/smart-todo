@@ -10,9 +10,21 @@ export default function Weather() {
   const [city, setCity] = useState('Hong Kong');
   const [units, setUnits] = useState('metric');
   const [data, setData] = useState(null);
+  const [locationLabel, setLocationLabel] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [lastQuery, setLastQuery] = useState(null); // { city } or { lat, lon }
+
+  function applyLocation(json, fallbackCity = '') {
+    const loc = json?.location;
+    if (loc?.name) {
+      const parts = [loc.name, loc.state, loc.country].filter(Boolean);
+      setLocationLabel(parts.join(', '));
+      setCity(loc.name);
+    } else if (fallbackCity) {
+      setLocationLabel(fallbackCity);
+    }
+  }
 
   async function loadByCity(c) {
     setLoading(true); setError('');
@@ -21,6 +33,7 @@ export default function Weather() {
       const json = await api.weatherByCity(token, { city: c, units, lang: langParam });
       if (!json?.data) throw new Error(t('empty_response'));
       setData(json.data);
+      applyLocation(json, c);
       setLastQuery({ city: c });
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
@@ -32,6 +45,7 @@ export default function Weather() {
       const langParam = locale === 'zh-Hant' ? 'zh_tw' : 'en';
       const json = await api.weatherByLatLon(token, { lat, lon, units, lang: langParam });
       setData(json.data);
+      applyLocation(json);
       setLastQuery({ lat, lon });
     } catch (e) { setError(typeof e === 'string' ? e : e.message); }
     finally { setLoading(false); }
@@ -113,6 +127,9 @@ export default function Weather() {
       {loading ? <div>{t('loading')}</div> : error ? <div className="error">{String(error)}</div> : (
         data && (
           <div className="stack">
+            {locationLabel && (
+              <div className="weather-location">{locationLabel}</div>
+            )}
             <div className="card" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
               <div>
                 <div style={{display:'flex', alignItems:'center', gap:12}}>

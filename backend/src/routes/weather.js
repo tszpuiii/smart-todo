@@ -10,6 +10,22 @@ const BASE_25 = 'https://api.openweathermap.org/data/2.5/onecall';
 const CURRENT_25 = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_25 = 'https://api.openweathermap.org/data/2.5/forecast';
 const GEO = 'https://api.openweathermap.org/geo/1.0/direct';
+const GEO_REVERSE = 'https://api.openweathermap.org/geo/1.0/reverse';
+
+function formatLocation(entry) {
+  if (!entry) return null;
+  return {
+    name: entry.name,
+    country: entry.country,
+    state: entry.state || ''
+  };
+}
+
+async function reverseGeocode(lat, lon) {
+  const url = `${GEO_REVERSE}?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`;
+  const geo = await fetchJson(url);
+  return formatLocation(geo?.[0]);
+}
 
 async function fetchJson(url) {
   const res = await fetch(url);
@@ -73,14 +89,24 @@ router.get('/', async (req, res, next) => {
   try {
     if (!API_KEY) return res.status(500).json({ error: 'Missing OPENWEATHER_API_KEY' });
     let { lat, lon, city, units = 'metric' } = req.query;
+    let location = null;
 
     if ((!lat || !lon) && city) {
       const q = encodeURIComponent(city);
       const geo = await fetchJson(`${GEO}?q=${q}&limit=1&appid=${API_KEY}`);
       if (!geo?.[0]) return res.status(404).json({ error: 'City not found' });
       lat = geo[0].lat; lon = geo[0].lon;
+      location = formatLocation(geo[0]);
     }
     if (!lat || !lon) return res.status(400).json({ error: 'lat/lon or city is required' });
+
+    if (!location) {
+      try {
+        location = await reverseGeocode(lat, lon);
+      } catch {
+        location = null;
+      }
+    }
 
     let data;
     try {
@@ -98,7 +124,7 @@ router.get('/', async (req, res, next) => {
         throw e;
       }
     }
-    return res.json({ lat, lon, units, data });
+    return res.json({ lat, lon, units, location, data });
   } catch (err) {
     // Surface upstream status (e.g., 401 Invalid API key) instead of 500
     const status = err.status || 500;
