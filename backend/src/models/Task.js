@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema(
     description: { type: String, default: '' },
     category: { type: String, default: 'general', index: true },
     status: { type: String, enum: ['todo', 'doing', 'done'], default: 'todo', index: true },
+    energyLevel: { type: String, enum: ['low', 'medium', 'high'], default: 'medium', index: true },
     tags: { type: [String], default: [] },
     subtasks: {
       type: [

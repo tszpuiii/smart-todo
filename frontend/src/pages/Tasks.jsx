@@ -87,6 +87,10 @@ export default function Tasks() {
   const header = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const scope = params.get('scope') || '';
+    const energy = params.get('energy') || '';
+    if (energy === 'low') return { emoji: '🟢', title: t('energy_low') };
+    if (energy === 'medium') return { emoji: '🟡', title: t('energy_medium') };
+    if (energy === 'high') return { emoji: '🔴', title: t('energy_high') };
     if (view === 'calendar') return { emoji: '📅', title: t('header_calendar') };
     if (view === 'board') return { emoji: '🧱', title: t('header_board') };
     if (scope === 'today') return { emoji: '📌', title: t('header_today') };
@@ -195,23 +199,29 @@ export default function Tasks() {
     return Array.from(set);
   }, [tasks]);
 
+  const energyParam = useMemo(() => new URLSearchParams(location.search).get('energy') || '', [location.search]);
+
+  const visibleTasks = useMemo(() => {
+    if (!energyParam) return tasks;
+    return tasks.filter(t => (t.energyLevel || 'medium') === energyParam);
+  }, [tasks, energyParam]);
+
   const groupedByStatus = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const isExpired = (t) => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed;
     return {
-      // 不顯示逾期未完成於 todo/doing，只顯示於 expired 區
-      todo: tasks.filter(t => (t.status || 'todo') === 'todo' && !isExpired(t)),
-      doing: tasks.filter(t => t.status === 'doing' && !isExpired(t)),
-      done: tasks.filter(t => t.status === 'done')
+      todo: visibleTasks.filter(t => (t.status || 'todo') === 'todo' && !isExpired(t)),
+      doing: visibleTasks.filter(t => t.status === 'doing' && !isExpired(t)),
+      done: visibleTasks.filter(t => t.status === 'done')
     };
-  }, [tasks]);
+  }, [visibleTasks]);
 
   const expiredTasks = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return tasks.filter(t => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed);
-  }, [tasks]);
+    return visibleTasks.filter(t => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed);
+  }, [visibleTasks]);
 
   const selectedTask = useMemo(() => tasks.find(t => t._id === selectedId) || tasks[0], [tasks, selectedId]);
   useEffect(() => { if (!selectedId && tasks[0]) setSelectedId(tasks[0]._id); }, [tasks, selectedId]);
@@ -220,9 +230,11 @@ export default function Tasks() {
   const filteredTasks = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const scope = params.get('scope') || '';
+    const energy = params.get('energy') || '';
     const q = search.toLowerCase();
     let list = tasks;
     if (q) list = list.filter(t => `${t.title} ${t.description}`.toLowerCase().includes(q));
+    if (energy) list = list.filter(t => (t.energyLevel || 'medium') === energy);
     if (scope === 'today') {
       const today = new Date();
       const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();

@@ -9,11 +9,12 @@ router.use(requireAuth);
 // List tasks with optional filters
 router.get('/', async (req, res, next) => {
   try {
-    const { category, completed, status } = req.query;
+    const { category, completed, status, energyLevel } = req.query;
     const query = { user: req.userId };
     if (category) query.category = category;
     if (typeof completed !== 'undefined') query.completed = completed === 'true';
     if (status) query.status = status;
+    if (energyLevel) query.energyLevel = energyLevel;
 
     const tasks = await Task.find(query).sort({ order: 1, createdAt: 1 });
     return res.json({ tasks });
@@ -25,7 +26,7 @@ router.get('/', async (req, res, next) => {
 // Create task
 router.post('/', async (req, res, next) => {
   try {
-    const { title, description = '', category = 'general', status = 'todo', tags = [], subtasks = [], notes = '', dueDate } = req.body;
+    const { title, description = '', category = 'general', status = 'todo', energyLevel = 'medium', tags = [], subtasks = [], notes = '', dueDate } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
     const task = await Task.create({
       user: req.userId,
@@ -33,6 +34,7 @@ router.post('/', async (req, res, next) => {
       description,
       category,
       status,
+      energyLevel,
       tags,
       subtasks,
       notes,
@@ -49,7 +51,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
     const update = {};
-    const allowed = ['title', 'description', 'category', 'status', 'tags', 'subtasks', 'notes', 'completed', 'dueDate'];
+    const allowed = ['title', 'description', 'category', 'status', 'energyLevel', 'tags', 'subtasks', 'notes', 'completed', 'dueDate'];
     for (const key of allowed) {
       if (key in req.body) update[key] = req.body[key];
     }

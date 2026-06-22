@@ -1,4 +1,5 @@
 import { useLocale } from '../context/LocaleContext.jsx';
+import EnergyBadge from './EnergyBadge.jsx';
 
 export default function TaskRow({ task, selected, onSelect, onToggle, onOpenDetails, isNew, isRemoving }) {
   const { t } = useLocale();
@@ -8,6 +9,7 @@ export default function TaskRow({ task, selected, onSelect, onToggle, onOpenDeta
       <div className="row-main">
         <div className="row-title">{task.title}</div>
         <div className="row-meta">
+          <EnergyBadge level={task.energyLevel} />
           {task.dueDate && <span className="meta">{new Date(task.dueDate).toLocaleDateString()}</span>}
           {Array.isArray(task.subtasks) && task.subtasks.length > 0 && <span className="meta">{task.subtasks.length} {t('subtasks')}</span>}
           {task.category && <span className="tag-pill">{task.category}</span>}

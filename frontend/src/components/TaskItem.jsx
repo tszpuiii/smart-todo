@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocale } from '../context/LocaleContext.jsx';
+import EnergyBadge from './EnergyBadge.jsx';
 
 export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNew }) {
   const [editing, setEditing] = useState(false);
@@ -49,6 +50,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
       ) : (
         <>
           <span className="title">{task.title}</span>
+          <EnergyBadge level={task.energyLevel} />
           <span className="category">{task.category || 'general'}</span>
           {task.dueDate && (
             <span className="meta" style={{marginLeft:8}}>

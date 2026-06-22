@@ -17,15 +17,21 @@ export default function CommandPalette({ onCreate }) {
   }, [open]);
 
   function parse(text) {
-    // very simple nlp: "Title #category @doing due:2025-12-31"
-    const title = text.replace(/#\S+/g, '').replace(/@\S+/g, '').replace(/due:\S+/g, '').trim();
+    const title = text
+      .replace(/#\S+/g, '')
+      .replace(/@\S+/g, '')
+      .replace(/due:\S+/g, '')
+      .replace(/@(low|medium|high)\b/gi, '')
+      .trim();
     const mCat = text.match(/#(\S+)/);
     const mStat = text.match(/@(todo|doing|done)/);
+    const mEnergy = text.match(/@(low|medium|high)/i);
     const mDue = text.match(/due:(\d{4}-\d{2}-\d{2})/);
     return {
       title: title || text.trim(),
       category: mCat ? mCat[1] : undefined,
       status: mStat ? mStat[1] : undefined,
+      energyLevel: mEnergy ? mEnergy[1].toLowerCase() : undefined,
       dueDate: mDue ? mDue[1] : undefined
     };
   }
@@ -43,8 +49,8 @@ export default function CommandPalette({ onCreate }) {
   return (
     <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,.3)', display:'grid', placeItems:'start center', paddingTop:120, zIndex:50}} onClick={()=>setOpen(false)}>
       <form onClick={(e)=>e.stopPropagation()} onSubmit={submit} style={{width:600, background:'#fff', border:'1px solid #e5e7eb', borderRadius:12, padding:16}}>
-        <div style={{fontSize:12, color:'#6b7280', marginBottom:8}}>快速新增：輸入標題，支援 #分類、@todo|@doing|@done、due:YYYY-MM-DD</div>
-        <input autoFocus value={text} onChange={(e)=>setText(e.target.value)} placeholder="例如：Prepare slides #work @doing due:2025-11-05" style={{width:'100%', padding:'10px 12px', border:'1px solid #e5e7eb', borderRadius:8}} />
+        <div style={{fontSize:12, color:'#6b7280', marginBottom:8}}>Quick add: #category @todo|@doing|@done @low|@medium|@high due:YYYY-MM-DD</div>
+        <input autoFocus value={text} onChange={(e)=>setText(e.target.value)} placeholder="e.g. Reply to Slack @low #work" style={{width:'100%', padding:'10px 12px', border:'1px solid #e5e7eb', borderRadius:8}} />
       </form>
     </div>
   );

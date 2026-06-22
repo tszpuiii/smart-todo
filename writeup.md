@@ -7,16 +7,18 @@
 
 ## What feature you added
 
-**Today / Upcoming / Expired views** — a scope-based way to split tasks by due date. *Today* shows items due today; *Upcoming* shows today-or-later (or no due date); *Expired* shows overdue, incomplete items in a separate section so they do not mix with active work.
+**Energy Match** — when creating a task, you tag the cognitive effort it needs: 🟢 Low energy / Admin, 🟡 Medium focus, or 🔴 Deep focus / Strategy. The sidebar **MATCH MY ENERGY** section filters your list to tasks that fit your *current* mental state, not just your calendar.
 
 ## What problem it solves in your daily workflow
 
-I often miss small deadlines because overdue tasks sit in the same list as everything else — they look “still todo” but are easy to scroll past. Every morning (~9:00) I open **Today** and pick 2–3 items to finish before noon. In the afternoon I switch to **Upcoming** to slot work for the rest of the week. Once at end of day I check **Expired** to either complete, reschedule, or delete what I missed. This matches how I actually triage work at day start, instead of scanning one long flat list.
+**The hook:** I built Energy Match because my biggest bottleneck as a coordinator is context-switching cost — bouncing between stakeholder meetings and trying to write specs in 15-minute gaps.
+
+**The workflow:** At 4:30 PM after a day of alignment meetings, I am mentally drained. Instead of staring at a flat board full of “write PRD” next to “reply on Slack,” I tap **🟢 Low energy** and only see admin tasks I can actually finish before my next call. When I block a 90-minute morning slot, I switch to **🔴 Deep focus** so quick wins do not steal time from strategy work. Time management is not only about *when* something is due — it is about matching tasks to the energy I have *right now*.
 
 ## One thing you would improve or add if you had more time
 
-**Due-date notifications** — the Today / Upcoming / Expired views only help when I open the app. I would add lightweight reminders: a nudge in the morning for tasks due *today*, a heads-up 1–2 days before something in *Upcoming*, and an alert when a task is *about to expire* (e.g. due tomorrow and still incomplete) or has just slipped into *Expired*. That way I do not have to remember to check the right view — the app meets me where I already am (browser notification or email), which is the natural next step after splitting tasks by date.
+If I had more time, I would add a lightweight analytics view: which energy tags get completed vs. overdue, and how often I open Low energy between meetings. That would show whether I am protecting enough deep-focus blocks — and auto-suggest “you have 20 minutes; here are 3 low-energy tasks” based on calendar gaps.
 
 ---
 
-*Reviewer notes: register any email/password; custom feature is in the sidebar (Today / Upcoming / Expired).*
+*Reviewer demo: register → add tasks with different energy levels (form or `Ctrl+K`: `Reply Slack @low`) → sidebar **MATCH MY ENERGY** → tap 🟢 Low energy.*

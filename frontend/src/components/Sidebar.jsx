@@ -102,12 +102,19 @@ export default function Sidebar({ open = true, onToggle, onOpenSettings }) {
   const qs = new URLSearchParams(loc.search);
   const currentScope = qs.get('scope') || '';
   const currentView = qs.get('view') || 'list';
+  const currentEnergy = qs.get('energy') || '';
   const isActive = (target) => {
-    // target can have scope/view keys to match
     const scopeOk = typeof target.scope === 'undefined' || target.scope === currentScope;
     const viewOk = typeof target.view === 'undefined' || target.view === currentView;
-    return scopeOk && viewOk;
+    const energyOk = typeof target.energy === 'undefined' || target.energy === currentEnergy;
+    return scopeOk && viewOk && energyOk;
   };
+
+  const energyCounts = useMemo(() => ({
+    low: tasks.filter(x => !x.completed && (x.energyLevel || 'medium') === 'low').length,
+    medium: tasks.filter(x => !x.completed && (x.energyLevel || 'medium') === 'medium').length,
+    high: tasks.filter(x => !x.completed && (x.energyLevel || 'medium') === 'high').length
+  }), [tasks]);
 
   const currentCategory = (qs.get('category') || '').toLowerCase();
 
@@ -126,28 +133,47 @@ export default function Sidebar({ open = true, onToggle, onOpenSettings }) {
           <span className="icon">🏠</span>
           <span className="label">{t('home')}</span>
         </div>
-        <div className={`row ${isActive({ scope: 'upcoming', view: 'list' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'upcoming', view: 'list', category: '' })}>
+        <div className={`row ${isActive({ scope: 'upcoming', view: 'list', energy: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'upcoming', view: 'list', category: '', energy: '' })}>
           <span className="icon">»</span>
           <span className="label">{t('header_upcoming')}</span>
           <span className="count-pill">{upcomingCount || 0}</span>
         </div>
-        <div className={`row ${isActive({ scope: 'today', view: 'list' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'today', view: 'list', category: '' })}>
+        <div className={`row ${isActive({ scope: 'today', view: 'list', energy: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'today', view: 'list', category: '', energy: '' })}>
           <span className="icon">☰</span>
           <span className="label">{t('header_today')}</span>
           <span className="count-pill">{todayCount || 0}</span>
         </div>
-        <div className={`row ${isActive({ scope: 'expired', view: 'list' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'expired', view: 'list', category: '' })}>
+        <div className={`row ${isActive({ scope: 'expired', view: 'list', energy: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ scope: 'expired', view: 'list', category: '', energy: '' })}>
           <span className="icon">⚠️</span>
           <span className="label">{t('header_expired')}</span>
           <span className="count-pill">{expiredCount || 0}</span>
         </div>
-        <div className={`row ${isActive({ view: 'calendar' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ view: 'calendar', category: '' })}>
+        <div className={`row ${isActive({ view: 'calendar', energy: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ view: 'calendar', category: '', scope: '', energy: '' })}>
           <span className="icon">📅</span>
           <span className="label">{t('header_calendar')}</span>
         </div>
-        <div className={`row ${isActive({ view: 'board' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ view: 'board', category: '' })}>
+        <div className={`row ${isActive({ view: 'board', energy: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ view: 'board', category: '', scope: '', energy: '' })}>
           <span className="icon">🧱</span>
           <span className="label">{t('header_board')}</span>
+        </div>
+      </div>
+
+      <div className="group">
+        <div className="group-title">{t('energy_group')}</div>
+        <div className={`row ${isActive({ energy: 'low', view: 'list', scope: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ energy: 'low', view: 'list', scope: '', category: '' })}>
+          <span className="icon">🟢</span>
+          <span className="label">{t('energy_low')}</span>
+          <span className="count-pill">{energyCounts.low || 0}</span>
+        </div>
+        <div className={`row ${isActive({ energy: 'medium', view: 'list', scope: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ energy: 'medium', view: 'list', scope: '', category: '' })}>
+          <span className="icon">🟡</span>
+          <span className="label">{t('energy_medium')}</span>
+          <span className="count-pill">{energyCounts.medium || 0}</span>
+        </div>
+        <div className={`row ${isActive({ energy: 'high', view: 'list', scope: '' }) ? 'active' : ''}`} role="button" onClick={()=>setQuery({ energy: 'high', view: 'list', scope: '', category: '' })}>
+          <span className="icon">🔴</span>
+          <span className="label">{t('energy_high')}</span>
+          <span className="count-pill">{energyCounts.high || 0}</span>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(initialCategory || 'general');
   const [status, setStatus] = useState('todo');
+  const [energyLevel, setEnergyLevel] = useState('medium');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [subtasks, setSubtasks] = useState([]);
@@ -22,8 +23,8 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await onCreate({ title, description, category, status, notes, subtasks, dueDate: dueDate || undefined });
-      setTitle(''); setDescription(''); setCategory('general'); setStatus('todo'); setDueDate(''); setNotes(''); setSubtasks([]);
+      await onCreate({ title, description, category, status, energyLevel, notes, subtasks, dueDate: dueDate || undefined });
+      setTitle(''); setDescription(''); setCategory('general'); setStatus('todo'); setEnergyLevel('medium'); setDueDate(''); setNotes(''); setSubtasks([]);
       if (onCancel) onCancel();
     } finally {
       setSubmitting(false);
@@ -48,6 +49,13 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
           <option value="todo">To Do</option>
           <option value="doing">Doing</option>
           <option value="done">Done</option>
+        </select>
+      </label>
+      <label>{t('form_energy')}
+        <select value={energyLevel} onChange={(e) => setEnergyLevel(e.target.value)}>
+          <option value="low">🟢 {t('energy_low')}</option>
+          <option value="medium">🟡 {t('energy_medium')}</option>
+          <option value="high">🔴 {t('energy_high')}</option>
         </select>
       </label>
       <label>{t('form_due')}
