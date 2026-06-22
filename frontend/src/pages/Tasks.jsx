@@ -120,9 +120,11 @@ export default function Tasks() {
     // Apply sensible defaults based on current filters so the new item is visible immediately
     const params = new URLSearchParams(location.search);
     const scope = params.get('scope') || '';
+    const energy = params.get('energy') || '';
     const enhanced = { ...payload };
     if (!enhanced.title) enhanced.title = t('new_page');
     if (categoryFilter && !enhanced.category) enhanced.category = categoryFilter;
+    if (!enhanced.energyLevel && energy) enhanced.energyLevel = energy;
     if (scope === 'today' && !enhanced.dueDate) {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -200,6 +202,7 @@ export default function Tasks() {
   }, [tasks]);
 
   const energyParam = useMemo(() => new URLSearchParams(location.search).get('energy') || '', [location.search]);
+  const defaultEnergy = energyParam || 'medium';
 
   const visibleTasks = useMemo(() => {
     if (!energyParam) return tasks;
@@ -216,6 +219,13 @@ export default function Tasks() {
       done: visibleTasks.filter(t => t.status === 'done')
     };
   }, [visibleTasks]);
+
+  const highEnergyDoingCount = useMemo(() => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const isExpired = (t) => t.dueDate && new Date(t.dueDate) < startOfToday && !t.completed;
+    return tasks.filter(t => t.status === 'doing' && !isExpired(t) && (t.energyLevel || 'medium') === 'high').length;
+  }, [tasks]);
 
   const expiredTasks = useMemo(() => {
     const now = new Date();
@@ -338,7 +348,7 @@ export default function Tasks() {
               </div>
               {showForm && (
                 <div style={{margin:'8px 0 12px'}}>
-                  <TaskForm initialCategory={categoryFilter || ''} onCreate={async (p)=>{ await handleCreate(p); setShowForm(false); }} onCancel={()=>setShowForm(false)} />
+                  <TaskForm initialCategory={categoryFilter || ''} initialEnergy={defaultEnergy} onCreate={async (p)=>{ await handleCreate(p); setShowForm(false); }} onCancel={()=>setShowForm(false)} />
                 </div>
               )}
               {(() => {
@@ -438,7 +448,7 @@ export default function Tasks() {
               </div>
               {showForm && calendarSelected && (
                 <div style={{margin:'8px 0 12px'}}>
-                  <TaskForm onCreate={async (p)=>{ await handleCreate({ ...p, dueDate: p.dueDate || `${calendarSelected.getFullYear()}-${String(calendarSelected.getMonth()+1).padStart(2,'0')}-${String(calendarSelected.getDate()).padStart(2,'0')}` }); setShowForm(false); }} onCancel={()=>setShowForm(false)} />
+                  <TaskForm initialEnergy={defaultEnergy} onCreate={async (p)=>{ await handleCreate({ ...p, dueDate: p.dueDate || `${calendarSelected.getFullYear()}-${String(calendarSelected.getMonth()+1).padStart(2,'0')}-${String(calendarSelected.getDate()).padStart(2,'0')}` }); setShowForm(false); }} onCancel={()=>setShowForm(false)} />
                 </div>
               )}
               <div className="rows">
@@ -451,6 +461,11 @@ export default function Tasks() {
           </div>
         ) : (
           <>
+          {view === 'board' && highEnergyDoingCount > 2 && (
+            <div className="energy-wip-banner" role="status">
+              {t('energy_wip_warning').replace('{count}', String(highEnergyDoingCount))}
+            </div>
+          )}
           <div className="board">
             {['todo','doing','done'].map((col) => (
               <div key={col} className={`column ${col}`}
@@ -475,7 +490,7 @@ export default function Tasks() {
                     />
                   ))}
                 </ul>
-                <button className="btn ghost-btn" onClick={() => handleCreate({ title: t('new_page'), status: col })}>{t('add_new_task')}</button>
+                <button className="btn ghost-btn" onClick={() => handleCreate({ title: t('new_page'), status: col, energyLevel: defaultEnergy })}>{t('add_new_task')}</button>
               </div>
             ))}
           </div>

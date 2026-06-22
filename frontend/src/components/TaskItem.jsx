@@ -35,7 +35,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete, dnd, isNe
   }
 
   return (
-    <li className={`task ${task.completed ? 'done' : ''} ${isNew ? 'new-task' : ''} ${removing ? 'removing' : ''}`}
+    <li className={`task energy-${task.energyLevel || 'medium'} ${task.completed ? 'done' : ''} ${isNew ? 'new-task' : ''} ${removing ? 'removing' : ''}`}
         draggable={!!dnd}
         onDragStart={dnd ? () => dnd.onDragStart(task._id) : undefined}
         onDragOver={dnd ? (e) => dnd.onDragOver(e) : undefined}

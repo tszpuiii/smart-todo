@@ -483,6 +483,24 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .energy-pill.energy-low { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
 .energy-pill.energy-medium { background: #fffbeb; border-color: #fde68a; color: #92400e; }
 .energy-pill.energy-high { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.task.energy-low { border-left: 4px solid #10b981; }
+.task.energy-medium { border-left: 4px solid #f59e0b; }
+.task.energy-high { border-left: 4px solid #ef4444; }
+.energy-wip-banner {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 13px;
+  line-height: 1.45;
+}
+[data-theme="dark"] .energy-wip-banner {
+  background: rgba(245,158,11,.12);
+  border-color: rgba(245,158,11,.35);
+  color: #fcd34d;
+}
 [data-theme="dark"] .energy-pill.energy-low { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: #6ee7b7; }
 [data-theme="dark"] .energy-pill.energy-medium { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.35); color: #fcd34d; }
 [data-theme="dark"] .energy-pill.energy-high { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color: #fca5a5; }

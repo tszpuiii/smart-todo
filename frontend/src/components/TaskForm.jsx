@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useLocale } from '../context/LocaleContext.jsx';
+import { inferEnergyFromTitle } from '../utils/inferEnergy.js';
 
- 
-
-export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
+export default function TaskForm({ onCreate, onCancel, initialCategory = '', initialEnergy = 'medium' }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(initialCategory || 'general');
   const [status, setStatus] = useState('todo');
-  const [energyLevel, setEnergyLevel] = useState('medium');
+  const [energyLevel, setEnergyLevel] = useState(initialEnergy);
+  const [energyTouched, setEnergyTouched] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [subtasks, setSubtasks] = useState([]);
@@ -19,24 +19,37 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
     if (initialCategory) setCategory(initialCategory);
   }, [initialCategory]);
 
+  useEffect(() => {
+    if (!energyTouched) setEnergyLevel(initialEnergy);
+  }, [initialEnergy, energyTouched]);
+
+  function handleTitleChange(value) {
+    setTitle(value);
+    if (energyTouched) return;
+    const inferred = inferEnergyFromTitle(value);
+    setEnergyLevel(inferred || initialEnergy);
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     try {
       await onCreate({ title, description, category, status, energyLevel, notes, subtasks, dueDate: dueDate || undefined });
-      setTitle(''); setDescription(''); setCategory('general'); setStatus('todo'); setEnergyLevel('medium'); setDueDate(''); setNotes(''); setSubtasks([]);
+      setTitle(''); setDescription(''); setCategory(initialCategory || 'general'); setStatus('todo');
+      setEnergyLevel(initialEnergy); setEnergyTouched(false); setDueDate(''); setNotes(''); setSubtasks([]);
       if (onCancel) onCancel();
     } finally {
       setSubmitting(false);
     }
   }
 
-  
+  const inferred = inferEnergyFromTitle(title);
+  const showAutoHint = !energyTouched && title.trim() && inferred;
 
   return (
     <form className="form" onSubmit={onSubmit}>
       <label>{t('form_title')}
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required placeholder={t('form_title_ph')} />
+        <input value={title} onChange={(e) => handleTitleChange(e.target.value)} required placeholder={t('form_title_ph')} />
       </label>
       <label>{t('form_description')}
         <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t('form_description_ph')} />
@@ -52,11 +65,12 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
         </select>
       </label>
       <label>{t('form_energy')}
-        <select value={energyLevel} onChange={(e) => setEnergyLevel(e.target.value)}>
+        <select value={energyLevel} onChange={(e) => { setEnergyTouched(true); setEnergyLevel(e.target.value); }}>
           <option value="low">🟢 {t('energy_low')}</option>
           <option value="medium">🟡 {t('energy_medium')}</option>
           <option value="high">🔴 {t('energy_high')}</option>
         </select>
+        {showAutoHint && <span className="muted" style={{ fontSize: 12, marginTop: 4, display: 'block' }}>{t('form_energy_auto_hint')}</span>}
       </label>
       <label>{t('form_due')}
         <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} min="1000-01-01" max="9999-12-31" />
@@ -82,5 +96,3 @@ export default function TaskForm({ onCreate, onCancel, initialCategory = '' }) {
     </form>
   );
 }
-
-

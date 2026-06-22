@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { resolveEnergyLevel } from '../utils/inferEnergy.js';
 
 export default function CommandPalette({ onCreate }) {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
 
@@ -40,6 +43,13 @@ export default function CommandPalette({ onCreate }) {
     e.preventDefault();
     const payload = parse(text);
     if (!payload.title) return;
+    const filterEnergy = new URLSearchParams(location.search).get('energy') || 'medium';
+    if (!payload.energyLevel) {
+      payload.energyLevel = resolveEnergyLevel({
+        title: payload.title,
+        filterDefault: filterEnergy
+      });
+    }
     await onCreate(payload);
     setText('');
     setOpen(false);
