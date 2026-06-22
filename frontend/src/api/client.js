@@ -5,7 +5,7 @@ function parseResponseBody(text) {
   if (!trimmed) return {};
   if (trimmed.startsWith('<')) {
     throw new Error(
-      'API is unreachable. Deploy the backend and point Vercel to it (see DEPLOY.md).'
+      'API is unreachable. Deploy the backend and configure the Vercel /api proxy.'
     );
   }
   try {

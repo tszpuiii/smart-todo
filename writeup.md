@@ -1,43 +1,22 @@
 # Oursky Pre-test Writeup
 
-> Copy/adapt this into your email reply. Keep it under half a page.
+**Live URL:** https://smart-todo-fawn.vercel.app  
+**GitHub:** https://github.com/tszpuiii/smart-todo
 
 ---
 
-## Live URL
+## What feature you added
 
-`https://YOUR-APP.vercel.app`
+**Today / Upcoming / Expired views** — a scope-based way to split tasks by due date. *Today* shows items due today; *Upcoming* shows today-or-later (or no due date); *Expired* shows overdue, incomplete items in a separate section so they do not mix with active work.
 
-## GitHub Repo
+## What problem it solves in your daily workflow
 
-`https://github.com/tszpuiii/smart-todo`
+I often miss small deadlines because overdue tasks sit in the same list as everything else — they look “still todo” but are easy to scroll past. Every morning (~9:00) I open **Today** and pick 2–3 items to finish before noon. In the afternoon I switch to **Upcoming** to slot work for the rest of the week. Once at end of day I check **Expired** to either complete, reschedule, or delete what I missed. This matches how I actually triage work at day start, instead of scanning one long flat list.
 
----
+## One thing you would improve or add if you had more time
 
-## Custom Feature: Today / Upcoming / Expired Views
-
-**What I built**
-
-A scope-based task view that splits my todo list into three buckets: **Today** (due today), **Upcoming** (today or later, or no due date), and **Expired** (overdue and not completed). Overdue items are also separated from the main list so they do not clutter active work.
-
-**What problem it solves**
-
-I often let small tasks slip past their due date. In a flat list, overdue items look the same as everything else, so I either ignore them or feel overwhelmed. Every morning I open **Today** to see what must happen now, use **Upcoming** for planning the rest of the week, and check **Expired** once to clear or reschedule what I missed. This matches how I actually triage work at the start of a day, instead of scrolling one long list.
-
-**How I use it**
-
-- 9:00 — open Today, pick 2–3 items to finish before noon  
-- Afternoon — switch to Upcoming to slot tasks for tomorrow  
-- End of day — open Expired, either complete, reschedule, or delete stale items  
-
-**One thing I would improve with more time**
-
-Add a lightweight end-of-day summary: "completed today vs. carried over," so I can close the loop without manually checking each view.
+**Calendar sync (e.g. Google Calendar / Outlook)** — many of my real deadlines already live in calendar blocks (meetings, class, client calls). Right now I set due dates manually, so tasks and calendar can drift apart. With two-way sync, a meeting on my calendar could auto-create or surface a related task in *Today*, and completing a task could update the calendar event. That would close the gap between “what’s on my schedule” and “what I still need to do,” which is the next step after splitting tasks by date.
 
 ---
 
-## Demo tips for reviewers
-
-- Register any email/password (no invite needed).
-- Sidebar: click **Today**, **Upcoming**, **Expired** to see the custom feature.
-- `Ctrl+K` (or `Cmd+K`): quick-add with `#category @doing due:2026-06-22`.
+*Reviewer notes: register any email/password; custom feature is in the sidebar (Today / Upcoming / Expired).*
